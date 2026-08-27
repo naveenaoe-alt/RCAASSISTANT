@@ -101,8 +101,8 @@ body {
 .section-btn.refresh.spinning i { animation: spin 0.6s linear; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-.section-body { transition: all 0.25s ease; overflow: hidden; }
-.section-body.collapsed { max-height: 0 !important; padding: 0; opacity: 0; margin: 0; }
+.section-body { transition: all 0.25s ease; overflow: visible; }
+.section-body.collapsed { max-height: 0 !important; padding: 0; opacity: 0; margin: 0; overflow: hidden; }
 .section-body.scrollable { overflow-y: auto; }
 
 .section-subtitle {
@@ -298,7 +298,6 @@ th:hover { color: var(--color-text, #172b4d); }
 th .sort-icon { margin-left: 4px; font-size: 10px; opacity: 0.4; }
 th.sorted .sort-icon { opacity: 1; color: #1976d2; }
 th.sorted { color: #1976d2; }
-}
 td {
   padding: 14px 16px;
   color: var(--color-text, #172b4d);
@@ -331,7 +330,6 @@ tr:hover td { background: #fafbfc; }
 .invoice-stats .errors { color: #d32f2f; font-weight: 500; }
 .invoice-stats .no-errors { color: #43a047; font-weight: 500; }
 
-}
 .use-case-tag {
   padding: 3px 10px;
   border-radius: 12px;
@@ -658,8 +656,24 @@ tr:hover td { background: #fafbfc; }
 
 /* Responsive */
 @media (max-width: 900px) {
-  .workflow-grid { grid-template-columns: repeat(2, 1fr); }
+  .workflow-grid { grid-template-columns: 1fr; }
+  .workflow-grid .small-cards { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* In-grid filters */
+.th-filter {
+  margin-top: 4px;
+  padding: 3px 6px;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #44546f;
+  background: white;
+  cursor: pointer;
+  width: 100%;
+  max-width: 120px;
+}
+.th-filter:focus { border-color: #1976d2; outline: none; }
 </style>
 </head>
 <body>
@@ -790,10 +804,10 @@ tr:hover td { background: #fafbfc; }
       <thead>
         <tr>
           <th onclick="sortTable(0)">Analysis ID <i class="fa-solid fa-sort sort-icon"></i></th>
-          <th onclick="sortTable(1)">Use Case <i class="fa-solid fa-sort sort-icon"></i></th>
-          <th onclick="sortTable(2)">Date & Time <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th>Use Case <i class="fa-solid fa-sort sort-icon"></i><br><select class="th-filter" id="filterUseCase" onchange="applyFilters()"><option value="">All</option><option value="Invoice Status">Invoice Status</option><option value="Payment Status">Payment Status</option><option value="PO & Vendor Details">PO & Vendor Details</option><option value="Invoice Reconciliation">Invoice Reconciliation</option></select></th>
+          <th>Date & Time <i class="fa-solid fa-sort sort-icon"></i><br><select class="th-filter" id="filterDate" onchange="applyFilters()"><option value="">All Dates</option><option value="21">21 May</option><option value="20">20 May</option><option value="19">19 May</option><option value="18">18 May</option><option value="17">17 May</option></select></th>
           <th onclick="sortTable(3)">Invoices <i class="fa-solid fa-sort sort-icon"></i></th>
-          <th onclick="sortTable(4)">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th>Status <i class="fa-solid fa-sort sort-icon"></i><br><select class="th-filter" id="filterStatus" onchange="applyFilters()"><option value="">All</option><option value="100%">Completed</option><option value="Running">Running</option></select></th>
           <th onclick="sortTable(5)">Output <i class="fa-solid fa-sort sort-icon"></i></th>
           <th>Actions</th>
         </tr>
@@ -1047,6 +1061,49 @@ function renderPagination() {
 
 // Initial render
 renderPage(1);
+
+// Filter logic
+function applyFilters() {
+  const useCaseFilter = document.getElementById('filterUseCase').value;
+  const dateFilter = document.getElementById('filterDate').value;
+  const statusFilter = document.getElementById('filterStatus').value;
+
+  // Filter the allAnalyses array and re-render
+  window.filteredAnalyses = allAnalyses.filter(item => {
+    let match = true;
+    if (useCaseFilter && item.useCase !== useCaseFilter) match = false;
+    if (dateFilter && !item.date.includes(dateFilter + ' May')) match = false;
+    if (statusFilter === '100%' && true) match = match; // all are 100% in demo
+    if (statusFilter === 'Running') match = false; // none running in static data
+    return match;
+  });
+
+  // Re-render with filtered data
+  const tbody = document.getElementById('tableBody');
+  const activePageSize = window.maximizedPageSize || pageSize;
+  const pageData = window.filteredAnalyses.slice(0, activePageSize);
+  tbody.innerHTML = '';
+  pageData.forEach(item => {
+    const errClass = item.errors > 0 ? 'errors' : 'no-errors';
+    const tr = document.createElement('tr');
+    tr.className = item.rowClass;
+    tr.innerHTML = `
+      <td class="id-cell"><span class="id-text">${item.id}</span></td>
+      <td><span class="use-case-tag ${item.tagClass}">${item.useCase}</span></td>
+      <td>${item.date}</td>
+      <td><div class="invoice-stats"><span class="submitted">${item.submitted} submitted</span><span class="${errClass}">${item.errors} errors</span></div></td>
+      <td><div class="status-bar"><div class="progress"><div class="progress-fill" style="width:100%"></div></div><span class="status-text">100%</span></div></td>
+      <td><a class="download-link" onclick="downloadOutput('${item.id}', '${item.useCase}', '${item.date}')"><i class="fa-solid fa-download"></i> Download output</a></td>
+      <td><div class="row-actions"><button class="row-action-btn edit" onclick="editId(this)" title="Edit ID"><i class="fa-solid fa-pen"></i></button><button class="row-action-btn delete" onclick="confirmDelete(this)" title="Delete"><i class="fa-solid fa-trash"></i></button></div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Update pagination info
+  const info = document.getElementById('paginationInfo');
+  info.textContent = `Showing ${pageData.length} of ${window.filteredAnalyses.length} analyses (filtered)`;
+  document.getElementById('paginationBtns').innerHTML = '';
+}
 
 function sortTable(colIdx) {
   const table = document.getElementById('analysisTable');
