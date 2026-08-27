@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--color-bg, #f0f2f5);
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  color: var(--color-text, #172b4d);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 56px;
+  background: var(--color-bg-secondary, #ffffff);
+  border-right: 1px solid var(--color-border-light, #ebecf0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 8px;
+}
+.sidebar-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted, #8993a4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 16px;
+}
+.sidebar-icon:hover {
+  background: var(--color-surface-hover, #f4f5f7);
+  color: var(--color-text, #172b4d);
+}
+.sidebar-icon.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  padding: 32px 40px;
+  overflow-y: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Workflow Cards Section */
+.section-card {
+  background: var(--color-bg-secondary, #ffffff);
+  border: 1px solid var(--color-border-light, #ebecf0);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Section header with controls */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-light, #ebecf0);
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-muted, #8993a4);
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+.section-btn:hover { background: #f4f5f7; color: var(--color-text, #172b4d); }
+.section-btn.refresh { color: #1976d2; }
+.section-btn.refresh:hover { background: #e3f2fd; }
+.section-btn.refresh.spinning i { animation: spin 0.6s linear; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.section-body { transition: all 0.25s ease; overflow: hidden; }
+.section-body.collapsed { max-height: 0 !important; padding: 0; opacity: 0; margin: 0; }
+.section-body.scrollable { overflow-y: auto; }
+
+.section-subtitle {
+  color: var(--color-text-muted, #8993a4);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Workflow Grid */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.workflow-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.workflow-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.workflow-card.blue { border-color: #1976d2; }
+.workflow-card.green { border-color: #43a047; }
+.workflow-card.orange { border-color: #e65100; }
+.workflow-card.purple { border-color: #7b1fa2; }
+
+.workflow-card.blue .wf-icon { background: #e3f2fd; color: #1976d2; }
+.workflow-card.green .wf-icon { background: #e8f5e9; color: #43a047; }
+.workflow-card.orange .wf-icon { background: #fff3e0; color: #e65100; }
+.workflow-card.purple .wf-icon { background: #f3e5f5; color: #7b1fa2; }
+
+.workflow-card.selected {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.wf-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.wf-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.wf-desc {
+  font-size: 12px;
+  color: var(--color-text-muted, #8993a4);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.wf-actions {
+  display: flex; flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.btn-upload {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 8px 16px;
+  font-size: 12px;
+}
+.workflow-card.blue .btn-upload { background: #e3f2fd; color: #1976d2; }
+.workflow-card.green .btn-upload { background: #e8f5e9; color: #43a047; }
+.workflow-card.orange .btn-upload { background: #fff3e0; color: #e65100; }
+.workflow-card.purple .btn-upload { background: #f3e5f5; color: #7b1fa2; }
+.btn-upload:hover { opacity: 0.85; transform: scale(1.02); }
+
+.format-select {
+  padding: 3px 6px;
+  border: 1px solid var(--color-border-light, #ebecf0);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--color-text-secondary, #44546f);
+  background: white;
+  cursor: pointer;
+}
+
+/* Recent Analyses Table */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.table-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border-light, #ebecf0);
+  border-radius: 8px;
+  background: var(--color-bg, #f0f2f5);
+}
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--color-text, #172b4d);
+  width: 150px;
+}
+.search-box i { color: var(--color-text-muted, #8993a4); font-size: 14px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+th {
+  text-align: left;
+  color: var(--color-text-muted, #8993a4);
+  font-weight: 500;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border, #dfe1e6);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+th:hover { color: var(--color-text, #172b4d); }
+th .sort-icon { margin-left: 4px; font-size: 10px; opacity: 0.4; }
+th.sorted .sort-icon { opacity: 1; color: #1976d2; }
+th.sorted { color: #1976d2; }
+}
+td {
+  padding: 14px 16px;
+  color: var(--color-text, #172b4d);
+  border-bottom: 1px solid var(--color-border-light, #ebecf0);
+}
+tr:hover td { background: #fafbfc; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px 0;
+  font-size: 12px;
+  color: var(--color-text-muted, #8993a4);
+}
+.pagination-info { font-size: 12px; }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn {
+  padding: 5px 10px; border-radius: 6px; border: 1px solid var(--color-border-light, #ebecf0);
+  background: white; cursor: pointer; font-size: 12px; color: var(--color-text-secondary, #44546f);
+  transition: all 0.15s ease;
+}
+.page-btn:hover { background: #f4f5f7; border-color: #1976d2; color: #1976d2; }
+.page-btn.active { background: #1976d2; color: white; border-color: #1976d2; }
+.page-btn.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+/* Invoice stats */
+.invoice-stats { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.invoice-stats .submitted { color: #1976d2; font-weight: 500; }
+.invoice-stats .errors { color: #d32f2f; font-weight: 500; }
+.invoice-stats .no-errors { color: #43a047; font-weight: 500; }
+
+}
+.use-case-tag {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.tag-blue { background: #e3f2fd; color: #1565c0; }
+.tag-green { background: #e8f5e9; color: #2e7d32; }
+.tag-orange { background: #fff3e0; color: #e65100; }
+.tag-purple { background: #f3e5f5; color: #6a1b9a; }
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress {
+  width: 80px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #43a047;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.progress-fill.running { background: #ff9800; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+.status-text { font-size: 12px; color: #43a047; font-weight: 500; }
+.status-text.running-text { color: #ff9800; }
+
+.download-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.download-link:hover { text-decoration: underline; }
+
+/* Row action buttons */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.row-action-btn {
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text-muted, #8993a4);
+  transition: all 0.15s ease;
+}
+.row-action-btn:hover { background: #f4f5f7; color: var(--color-text, #172b4d); }
+.row-action-btn.edit:hover { color: #1976d2; background: #e3f2fd; }
+.row-action-btn.delete:hover { color: #d32f2f; background: #ffebee; }
+
+/* Inline edit input */
+.inline-edit {
+  border: 1px solid #1976d2;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+  font-family: inherit;
+  width: 160px;
+  outline: none;
+}
+
+/* Delete confirm modal */
+.delete-modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.delete-modal.active { display: flex; }
+.delete-modal-content {
+  background: white; border-radius: 12px; padding: 28px;
+  width: 380px; text-align: center;
+  animation: slideUp 0.25s ease-out;
+}
+.delete-modal-content i { font-size: 32px; color: #d32f2f; margin-bottom: 12px; }
+.delete-modal-content h3 { font-size: 16px; margin-bottom: 8px; }
+.delete-modal-content p { font-size: 13px; color: var(--color-text-muted, #8993a4); margin-bottom: 20px; }
+.delete-actions { display: flex; justify-content: center; gap: 10px; }
+.btn-delete-confirm {
+  padding: 8px 18px; border: none; border-radius: 8px;
+  background: #d32f2f; color: white; cursor: pointer; font-size: 13px; font-weight: 500;
+}
+.btn-delete-confirm:hover { background: #b71c1c; }
+
+/* Ask RCA Assistant */
+.ask-section {
+  padding: 28px 32px;
+}
+.ask-title {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.ask-subtitle {
+  color: var(--color-text-muted, #8993a4);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.ask-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ask-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border, #dfe1e6);
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.ask-input:focus { border-color: #1976d2; }
+.attach-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  border: 1px solid var(--color-border, #dfe1e6);
+  border-radius: 10px;
+  background: white;
+  font-size: 16px; color: var(--color-text-muted, #8993a4);
+  cursor: pointer; transition: all 0.15s ease;
+}
+.attach-btn:hover { background: #f4f5f7; border-color: #1976d2; color: #1976d2; }
+.attach-file-name { font-size: 12px; color: #43a047; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+/* Chat messages */
+.chat-messages {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 12px 0;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+.chat-messages.expanded {
+  max-height: 420px;
+}
+.chat-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.chat-msg.user {
+  flex-direction: row-reverse;
+}
+.chat-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.chat-msg.assistant .chat-avatar { background: #e3f2fd; color: #1976d2; }
+.chat-msg.user .chat-avatar { background: #e8f5e9; color: #2e7d32; }
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.chat-msg.assistant .chat-bubble {
+  background: #f4f5f7;
+  color: var(--color-text, #172b4d);
+  border-top-left-radius: 4px;
+}
+.chat-msg.user .chat-bubble {
+  background: #1976d2;
+  color: white;
+  border-top-right-radius: 4px;
+}
+.chat-history-loader {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted, #8993a4);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+.chat-history-loader:hover { background: #f4f5f7; color: #1976d2; }
+.chat-typing { display: flex; gap: 4px; padding: 4px 0; }
+.chat-typing span { width: 6px; height: 6px; background: #8993a4; border-radius: 50%; animation: bounce 1.2s infinite; }
+.chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
+.ask-btn {
+  padding: 12px 20px;
+  background: #1a2332;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.ask-btn:hover { background: #2d3748; }
+
+/* Upload Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 440px;
+  max-width: 90%;
+  animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.modal-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.modal-desc { color: var(--color-text-muted, #8993a4); font-size: 13px; margin-bottom: 20px; }
+.drop-zone {
+  border: 2px dashed var(--color-border, #dfe1e6);
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+.drop-zone:hover { border-color: #1976d2; background: #f8faff; }
+.drop-zone i { font-size: 32px; color: var(--color-text-muted, #8993a4); margin-bottom: 8px; }
+.drop-zone p { font-size: 13px; color: var(--color-text-secondary, #44546f); }
+.drop-zone .browse { color: #1976d2; font-weight: 500; cursor: pointer; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.btn-cancel {
+  padding: 8px 18px;
+  border: 1px solid var(--color-border, #dfe1e6);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn-submit {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #1976d2;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-submit:hover { background: #1565c0; }
+
+/* Floating Chat Icon */
+.chat-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1a2332;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.15s ease;
+  font-size: 18px;
+}
+.chat-fab:hover { transform: scale(1.08); }
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #1a2332;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: #2e7d32; }
+.toast.info { background: #1565c0; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .workflow-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<h1 style="position: absolute; top: -9999px;">RCA Assistant</h1>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-icon active"><i class="fa-solid fa-house"></i></div>
+  <div class="sidebar-icon"><i class="fa-solid fa-right-left"></i></div>
+  <div class="sidebar-icon"><i class="fa-regular fa-clock"></i></div>
+  <div class="sidebar-icon"><i class="fa-regular fa-comment"></i></div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-icon"><i class="fa-solid fa-gear"></i></div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Workflow Cards (compact) -->
+  <section class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">How can I help you?</h2>
+      <div class="section-controls">
+        <button class="section-btn" onclick="toggleSection(this)" title="Minimize"><i class="fa-solid fa-minus"></i></button>
+        <button class="section-btn" onclick="maximizeSection(this)" title="Maximize"><i class="fa-solid fa-expand"></i></button>
+      </div>
+    </div>
+    <p class="section-subtitle">Select a use case to upload invoice details</p>
+    <div class="workflow-grid section-body">
+      <div class="workflow-card blue" onclick="selectWorkflow(this, 'PO & Vendor Details')">
+        <div class="wf-icon"><i class="fa-regular fa-file-lines"></i></div>
+        <div class="wf-title">Get PO & Vendor Details</div>
+        <div class="wf-desc">Provides PO, vendor name based on invoice number</div>
+        <div class="wf-actions">
+          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('PO & Vendor Details')">Upload</button>
+          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        </div>
+      </div>
+      <div class="workflow-card green" onclick="selectWorkflow(this, 'Invoice Status')">
+        <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="wf-title">Get Invoice Status</div>
+        <div class="wf-desc">Provides current status of the invoice</div>
+        <div class="wf-actions">
+          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Invoice Status')">Upload</button>
+          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        </div>
+      </div>
+      <div class="workflow-card orange" onclick="selectWorkflow(this, 'Payment Status')">
+        <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+        <div class="wf-title">Get Payment Status</div>
+        <div class="wf-desc">Provides payment status and related details</div>
+        <div class="wf-actions">
+          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Payment Status')">Upload</button>
+          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        </div>
+      </div>
+      <div class="workflow-card purple" onclick="selectWorkflow(this, 'Invoice Reconciliation')">
+        <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+        <div class="wf-title">Invoice Reconciliation</div>
+        <div class="wf-desc">Match and reconcile invoice with PO, GR and payments</div>
+        <div class="wf-actions">
+          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
+          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Analyses -->
+  <section class="section-card">
+    <div class="section-header">
+      <div class="table-title"><i class="fa-regular fa-file-lines"></i> Recent Analyses</div>
+      <div class="section-controls">
+        <div class="search-box" style="margin-right:8px;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search analyses" id="searchInput" oninput="filterTable()">
+        </div>
+        <button class="section-btn refresh" onclick="refreshAnalyses(this)" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="section-btn" onclick="toggleSection(this)" title="Minimize"><i class="fa-solid fa-minus"></i></button>
+        <button class="section-btn" onclick="maximizeSection(this)" title="Maximize"><i class="fa-solid fa-expand"></i></button>
+      </div>
+    </div>
+    <div class="section-body scrollable">
+    <table style="margin-top:12px;" id="analysisTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">Analysis ID <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th onclick="sortTable(1)">Use Case <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th onclick="sortTable(2)">Date & Time <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th onclick="sortTable(3)">Invoices <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th onclick="sortTable(4)">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th onclick="sortTable(5)">Output <i class="fa-solid fa-sort sort-icon"></i></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+    <div class="pagination" id="pagination">
+      <span class="pagination-info" id="paginationInfo">Showing 1–10 of 25 analyses</span>
+      <div class="pagination-btns" id="paginationBtns">
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- Ask RCA Assistant -->
+  <section class="section-card ask-section">
+    <div class="section-header">
+      <div class="ask-title"><i class="fa-regular fa-comment-dots"></i> Ask RCA Assistant</div>
+      <div class="section-controls">
+        <button class="section-btn" onclick="toggleSection(this)" title="Minimize"><i class="fa-solid fa-minus"></i></button>
+        <button class="section-btn" onclick="maximizeSection(this)" title="Maximize"><i class="fa-solid fa-expand"></i></button>
+      </div>
+    </div>
+    <p class="ask-subtitle">Ask any question about invoices, payments, vendors, or reconciliations.</p>
+    <div class="section-body">
+    <!-- Chat messages area -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-history-loader" id="chatHistoryLoader" onclick="loadPastConversations()">
+        <i class="fa-solid fa-arrow-up"></i> Load earlier conversations
+      </div>
+      <div class="chat-msg assistant">
+        <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="chat-bubble">Hi! I'm your RCA Assistant. Ask me anything about invoices, payments, vendors, or reconciliations.</div>
+      </div>
+    </div>
+    <!-- Input row -->
+    <div class="ask-input-wrapper">
+      <input type="text" class="ask-input" placeholder="Ask a question..." id="askInput" onkeydown="if(event.key==='Enter')askQuestion()">
+      <button class="attach-btn" onclick="document.getElementById('chatFileInput').click()" title="Attach file">
+        <i class="fa-solid fa-paperclip"></i>
+      </button>
+      <span class="attach-file-name" id="attachedFileName"></span>
+      <input type="file" id="chatFileInput" style="display:none" onchange="handleChatAttach(this)">
+      <button class="ask-btn" onclick="askQuestion()">Ask Assistant <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+    </div>
+  </section>
+</main>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Upload Invoice Details</div>
+    <div class="modal-desc" id="modalDesc">Upload your invoice file for analysis</div>
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <p>Drag and drop your file here, or <span class="browse">browse</span></p>
+      <p style="font-size:11px; color:#8993a4; margin-top:6px;">Supports: .xlsx</p>
+    </div>
+    <input type="file" id="fileInput" style="display:none" accept=".xlsx" onchange="handleFile(this)">
+    <div id="filePreview" style="display:none; padding:10px; background:#f4f5f7; border-radius:8px; font-size:13px; margin-bottom:10px;">
+      <i class="fa-regular fa-file-excel" style="color:#43a047;"></i> <span id="fileName"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" onclick="submitUpload()">Run Analysis</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Delete Confirmation Modal -->
+<div class="delete-modal" id="deleteModal">
+  <div class="delete-modal-content">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <h3>Delete Analysis</h3>
+    <p>Do you want to permanently delete this analysis? This action cannot be undone.</p>
+    <div class="delete-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-delete-confirm" onclick="executeDelete()">Delete Permanently</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<div class="chat-fab"><i class="fa-regular fa-comment-dots"></i></div>
+
+<script>
+let selectedWorkflow = '';
+let deleteTargetRow = null;
+let sortState = { col: -1, asc: true };
+let currentPage = 1;
+const pageSize = 10;
+
+// Generate sample analysis data
+const useCases = ['Invoice Status', 'Payment Status', 'PO & Vendor Details', 'Invoice Reconciliation'];
+const tagClasses = { 'Invoice Status': 'tag-blue', 'Payment Status': 'tag-green', 'PO & Vendor Details': 'tag-orange', 'Invoice Reconciliation': 'tag-purple' };
+const rowClasses = { 'Invoice Status': 'row-blue', 'Payment Status': 'row-green', 'PO & Vendor Details': 'row-orange', 'Invoice Reconciliation': 'row-purple' };
+
+const allAnalyses = [];
+for (let i = 0; i < 30; i++) {
+  const d = new Date(2024, 4, 21 - Math.floor(i / 3), 10 - (i % 5), (i * 7) % 60);
+  const uc = useCases[i % 4];
+  const submitted = Math.floor(Math.random() * 180) + 20;
+  const errors = Math.floor(Math.random() * 10);
+  allAnalyses.push({
+    id: 'RCA-2024-05-' + String(21 - Math.floor(i / 3)).padStart(2, '0') + '-' + String(i + 1).padStart(3, '0'),
+    useCase: uc,
+    tagClass: tagClasses[uc],
+    rowClass: rowClasses[uc],
+    date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    submitted: submitted,
+    errors: errors
+  });
+}
+
+function renderPage(page) {
+  currentPage = page;
+  const tbody = document.getElementById('tableBody');
+  const activePageSize = window.maximizedPageSize || pageSize;
+  const start = (page - 1) * activePageSize;
+  const end = Math.min(start + activePageSize, allAnalyses.length);
+  const pageData = allAnalyses.slice(start, end);
+
+  tbody.innerHTML = '';
+  pageData.forEach(item => {
+    const errClass = item.errors > 0 ? 'errors' : 'no-errors';
+    const tr = document.createElement('tr');
+    tr.className = item.rowClass;
+    tr.innerHTML = `
+      <td class="id-cell"><span class="id-text">${item.id}</span></td>
+      <td><span class="use-case-tag ${item.tagClass}">${item.useCase}</span></td>
+      <td>${item.date}</td>
+      <td><div class="invoice-stats"><span class="submitted">${item.submitted} submitted</span><span class="${errClass}">${item.errors} errors</span></div></td>
+      <td><div class="status-bar"><div class="progress"><div class="progress-fill" style="width:100%"></div></div><span class="status-text">100%</span></div></td>
+      <td><a class="download-link" onclick="downloadOutput('${item.id}', '${item.useCase}', '${item.date}')"><i class="fa-solid fa-download"></i> Download output</a></td>
+      <td><div class="row-actions"><button class="row-action-btn edit" onclick="editId(this)" title="Edit ID"><i class="fa-solid fa-pen"></i></button><button class="row-action-btn delete" onclick="confirmDelete(this)" title="Delete"><i class="fa-solid fa-trash"></i></button></div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const activePageSize = window.maximizedPageSize || pageSize;
+  const totalPages = Math.ceil(allAnalyses.length / activePageSize);
+  const info = document.getElementById('paginationInfo');
+  const btns = document.getElementById('paginationBtns');
+  const start = (currentPage - 1) * activePageSize + 1;
+  const end = Math.min(currentPage * activePageSize, allAnalyses.length);
+
+  info.textContent = `Showing ${start}–${end} of ${allAnalyses.length} analyses`;
+
+  let html = '';
+  html += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="renderPage(${currentPage - 1})">‹</button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="renderPage(${p})">${p}</button>`;
+  }
+  html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="renderPage(${currentPage + 1})">›</button>`;
+  btns.innerHTML = html;
+}
+
+// Initial render
+renderPage(1);
+
+function sortTable(colIdx) {
+  const table = document.getElementById('analysisTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const headers = table.querySelectorAll('th');
+
+  // Toggle direction
+  if (sortState.col === colIdx) {
+    sortState.asc = !sortState.asc;
+  } else {
+    sortState.col = colIdx;
+    sortState.asc = true;
+  }
+
+  // Update header styles
+  headers.forEach((h, i) => {
+    h.classList.remove('sorted');
+    const icon = h.querySelector('.sort-icon');
+    if (icon) icon.className = 'fa-solid fa-sort sort-icon';
+  });
+  headers[colIdx].classList.add('sorted');
+  const activeIcon = headers[colIdx].querySelector('.sort-icon');
+  if (activeIcon) activeIcon.className = 'fa-solid ' + (sortState.asc ? 'fa-sort-up' : 'fa-sort-down') + ' sort-icon';
+
+  // Sort rows
+  rows.sort((a, b) => {
+    const aText = a.cells[colIdx].textContent.trim().toLowerCase();
+    const bText = b.cells[colIdx].textContent.trim().toLowerCase();
+    if (aText < bText) return sortState.asc ? -1 : 1;
+    if (aText > bText) return sortState.asc ? 1 : -1;
+    return 0;
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+// Inline edit Analysis ID
+function editId(btn) {
+  const row = btn.closest('tr');
+  const cell = row.querySelector('.id-cell');
+  const span = cell.querySelector('.id-text');
+  if (span) {
+    const currentVal = span.textContent;
+    cell.innerHTML = '<input class="inline-edit" value="' + currentVal + '" onblur="saveId(this)" onkeydown="if(event.key===\'Enter\')this.blur()" autofocus>';
+    cell.querySelector('input').focus();
+    cell.querySelector('input').select();
+  }
+}
+
+function saveId(input) {
+  const newVal = input.value.trim() || input.defaultValue;
+  const cell = input.closest('.id-cell');
+  cell.innerHTML = '<span class="id-text">' + newVal + '</span>';
+  showToast('Analysis ID updated', 'success');
+}
+
+// Delete with confirmation
+function confirmDelete(btn) {
+  deleteTargetRow = btn.closest('tr');
+  document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('active');
+  deleteTargetRow = null;
+}
+
+function executeDelete() {
+  if (deleteTargetRow) {
+    deleteTargetRow.remove();
+    showToast('Analysis deleted permanently', 'success');
+  }
+  closeDeleteModal();
+}
+
+function toggleSection(btn) {
+  const section = btn.closest('.section-card');
+  const body = section.querySelector('.section-body');
+  if (body.classList.contains('collapsed')) {
+    body.classList.remove('collapsed');
+    btn.querySelector('i').className = 'fa-solid fa-minus';
+    btn.title = 'Minimize';
+  } else {
+    body.classList.add('collapsed');
+    btn.querySelector('i').className = 'fa-solid fa-plus';
+    btn.title = 'Expand';
+  }
+}
+
+function maximizeSection(btn) {
+  const section = btn.closest('.section-card');
+  const allSections = document.querySelectorAll('.section-card');
+  const mainEl = document.querySelector('.main');
+  const isMaximized = section.classList.contains('maximized');
+  if (!isMaximized) {
+    allSections.forEach(s => {
+      s.classList.remove('maximized');
+      if (s !== section) s.style.display = 'none';
+    });
+    section.classList.add('maximized');
+    section.style.position = 'fixed';
+    section.style.inset = '0';
+    section.style.zIndex = '999';
+    section.style.borderRadius = '0';
+    section.style.margin = '0';
+    section.style.maxHeight = '100vh';
+    section.style.overflowY = 'auto';
+    btn.querySelector('i').className = 'fa-solid fa-compress';
+    btn.title = 'Restore';
+
+    // If Recent Analyses is maximized, increase page size to 30
+    if (section.querySelector('#tableBody')) {
+      window.maximizedPageSize = 30;
+      renderPage(1);
+    }
+    // If RCA Assistant is maximized, expand chat area
+    const chatEl = section.querySelector('#chatMessages');
+    if (chatEl) {
+      chatEl.style.maxHeight = 'calc(100vh - 180px)';
+    }
+  } else {
+    section.classList.remove('maximized');
+    section.style.position = '';
+    section.style.inset = '';
+    section.style.zIndex = '';
+    section.style.borderRadius = '';
+    section.style.margin = '';
+    section.style.maxHeight = '';
+    section.style.overflowY = '';
+    allSections.forEach(s => { s.style.display = ''; });
+
+    // Restore page size to 10 for Recent Analyses
+    if (section.querySelector('#tableBody')) {
+      window.maximizedPageSize = null;
+      renderPage(1);
+    }
+    // Restore chat height
+    const chatEl = section.querySelector('#chatMessages');
+    if (chatEl) {
+      chatEl.style.maxHeight = '';
+    }
+    btn.querySelector('i').className = 'fa-solid fa-expand';
+    btn.title = 'Maximize';
+  }
+}
+
+function refreshAnalyses(btn) {
+  btn.classList.add('spinning');
+  showToast('Refreshing analyses...', 'info');
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    showToast('Analyses refreshed', 'success');
+  }, 1200);
+}
+
+function selectWorkflow(card, name) {
+  document.querySelectorAll('.workflow-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedWorkflow = name;
+}
+
+function openUploadModal(workflow) {
+  selectedWorkflow = workflow;
+  document.getElementById('modalTitle').textContent = 'Upload Invoice — ' + workflow;
+  document.getElementById('modalDesc').textContent = 'Upload your invoice file for ' + workflow + ' analysis';
+  document.getElementById('uploadModal').classList.add('active');
+  document.getElementById('filePreview').style.display = 'none';
+}
+
+function closeModal() {
+  document.getElementById('uploadModal').classList.remove('active');
+}
+
+function handleFile(input) {
+  if (input.files.length > 0) {
+    document.getElementById('fileName').textContent = input.files[0].name;
+    document.getElementById('filePreview').style.display = 'block';
+  }
+}
+
+function submitUpload() {
+  closeModal();
+  // Simulate adding a new running analysis
+  const tbody = document.getElementById('tableBody');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const id = 'RCA-' + now.toISOString().slice(0,10).replace(/-/g, '-') + '-' + String(Math.floor(Math.random()*900)+100);
+  
+  const tagClass = selectedWorkflow === 'Invoice Status' ? 'tag-blue' :
+                   selectedWorkflow === 'Payment Status' ? 'tag-green' :
+                   selectedWorkflow === 'PO & Vendor Details' ? 'tag-orange' : 'tag-purple';
+  const rowClass = selectedWorkflow === 'Invoice Status' ? 'row-blue' :
+                   selectedWorkflow === 'Payment Status' ? 'row-green' :
+                   selectedWorkflow === 'PO & Vendor Details' ? 'row-orange' : 'row-purple';
+  
+  const newRow = document.createElement('tr');
+  newRow.className = rowClass;
+  newRow.innerHTML = `
+    <td class="id-cell"><span class="id-text">${id}</span></td>
+    <td><span class="use-case-tag ${tagClass}">${selectedWorkflow}</span></td>
+    <td>${dateStr}</td>
+    <td><div class="invoice-stats"><span class="submitted">— submitted</span><span style="color:#8993a4;">Pending...</span></div></td>
+    <td><div class="status-bar"><div class="progress"><div class="progress-fill running" style="width:45%"></div></div><span class="status-text running-text">Running...</span></div></td>
+    <td><span style="color:#8993a4; font-size:12px;">Processing...</span></td>
+    <td><div class="row-actions"><button class="row-action-btn edit" onclick="editId(this)" title="Edit ID"><i class="fa-solid fa-pen"></i></button><button class="row-action-btn delete" onclick="confirmDelete(this)" title="Delete"><i class="fa-solid fa-trash"></i></button></div></td>
+  `;
+  tbody.insertBefore(newRow, tbody.firstChild);
+  showToast('Analysis started for ' + selectedWorkflow, 'success');
+  
+  // Simulate progress
+  let progress = 45;
+  const interval = setInterval(() => {
+    progress += Math.random() * 15;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      const bar = newRow.querySelector('.progress-fill');
+      bar.style.width = '100%';
+      bar.classList.remove('running');
+      newRow.querySelector('.status-text').textContent = '100%';
+      newRow.querySelector('.status-text').classList.remove('running-text');
+      newRow.querySelector('td:last-child').innerHTML = '<a class="download-link" onclick="showToast(\'Downloading output...\', \'info\')"><i class="fa-solid fa-download"></i> Download output</a>';
+      const invCount = Math.floor(Math.random() * 150) + 20;
+      const errCount = Math.floor(Math.random() * 8);
+      newRow.querySelector('td:nth-child(4)').innerHTML = '<div class="invoice-stats"><span class="submitted">' + invCount + ' submitted</span><span class="' + (errCount > 0 ? 'errors' : 'no-errors') + '">' + errCount + ' errors</span></div>';
+      newRow.querySelector('td:nth-child(6)').innerHTML = '<a class="download-link" onclick="showToast(\'Downloading output...\', \'info\')"><i class="fa-solid fa-download"></i> Download output</a>';
+      showToast('Analysis complete!', 'success');
+    } else {
+      newRow.querySelector('.progress-fill').style.width = progress + '%';
+    }
+  }, 800);
+}
+
+function handleChatAttach(input) {
+  const nameEl = document.getElementById('attachedFileName');
+  if (input.files.length > 0) {
+    nameEl.innerHTML = '<i class="fa-solid fa-file"></i> ' + input.files[0].name + ' <span style="cursor:pointer;color:#d32f2f;" onclick="removeChatAttach()">&times;</span>';
+  }
+}
+function removeChatAttach() {
+  document.getElementById('attachedFileName').innerHTML = '';
+  document.getElementById('chatFileInput').value = '';
+}
+
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const rows = document.querySelectorAll('#tableBody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function askQuestion() {
+  const input = document.getElementById('askInput');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const chatMessages = document.getElementById('chatMessages');
+
+  // Auto-minimize Recent Analyses on first interaction
+  if (!window.chatStarted) {
+    window.chatStarted = true;
+    const recentSection = document.querySelectorAll('.section-card')[1];
+    const recentBody = recentSection.querySelector('.section-body');
+    const recentBtn = recentSection.querySelector('.section-btn');
+    if (recentBody && !recentBody.classList.contains('collapsed')) {
+      recentBody.classList.add('collapsed');
+      if (recentBtn) {
+        recentBtn.querySelector('i').className = 'fa-solid fa-plus';
+        recentBtn.title = 'Expand';
+      }
+    }
+    // Expand chat area
+    chatMessages.classList.add('expanded');
+  }
+
+  // Add user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-msg user';
+  userMsg.innerHTML = '<div class="chat-avatar"><i class="fa-solid fa-user"></i></div><div class="chat-bubble">' + escapeHtml(question) + '</div>';
+  chatMessages.appendChild(userMsg);
+  input.value = '';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Show typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'chat-msg assistant';
+  typing.id = 'typingIndicator';
+  typing.innerHTML = '<div class="chat-avatar"><i class="fa-solid fa-robot"></i></div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
+  chatMessages.appendChild(typing);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Simulate assistant response
+  setTimeout(() => {
+    typing.remove();
+    const response = getSimulatedResponse(question);
+    const botMsg = document.createElement('div');
+    botMsg.className = 'chat-msg assistant';
+    botMsg.innerHTML = '<div class="chat-avatar"><i class="fa-solid fa-robot"></i></div><div class="chat-bubble">' + response + '</div>';
+    chatMessages.appendChild(botMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 1500);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function getSimulatedResponse(q) {
+  const lower = q.toLowerCase();
+  if (lower.includes('invoice') && lower.includes('status'))
+    return 'Based on the latest data, <strong>INV-2024-04567</strong> is currently in "Approved" status. Payment processing was initiated on 20 May 2024.';
+  if (lower.includes('payment'))
+    return 'Payment for the queried invoice was processed on <strong>21 May 2024</strong>. Settlement reference: <strong>PAY-REF-88421</strong>. Amount: ₹4,52,300.';
+  if (lower.includes('vendor') || lower.includes('po'))
+    return 'The PO associated with this invoice is <strong>PO-2024-11023</strong>, linked to vendor <strong>Acme Supplies Pvt. Ltd.</strong> (Vendor Code: V-00234).';
+  if (lower.includes('reconcil'))
+    return 'Reconciliation check: Invoice matches PO quantity and GR receipt. <strong>No discrepancies found.</strong> 3-way match confirmed.';
+  if (lower.includes('error'))
+    return 'There are <strong>3 invoices</strong> with errors in the latest batch. Common issue: Mismatched PO line item quantities. IDs: INV-04567, INV-04571, INV-04589.';
+  return 'I found relevant data for your query. The analysis shows <strong>120 invoices processed</strong> in this batch with a 97.5% match rate. Would you like me to drill down into specific discrepancies?';
+}
+
+function loadPastConversations() {
+  const chatMessages = document.getElementById('chatMessages');
+  const loader = document.getElementById('chatHistoryLoader');
+  if (!window.chatHistoryPage) window.chatHistoryPage = 0;
+  window.chatHistoryPage++;
+
+  const questions = [
+    'What is the status of INV-2024-04555?',
+    'Show vendor details for PO-2024-11020',
+    'How many invoices had errors last week?',
+    'What is the payment status of INV-2024-04321?',
+    'Reconcile INV-2024-04100 with PO-2024-10900',
+    'List all pending invoices from May 2024',
+    'What is the GR status for PO-2024-11050?',
+    'Show me error details for batch RCA-2024-05-18-012',
+    'Which vendor has the most rejected invoices?',
+    'What is the average processing time this month?',
+    'Show payment details for vendor V-00198',
+    'How many invoices are pending approval?',
+    'Check 3-way match for INV-2024-04600',
+    'What PO is linked to INV-2024-04789?',
+    'Show me invoices submitted today',
+    'What is the reconciliation rate this week?',
+    'List vendors with overdue payments',
+    'Get PO details for vendor Acme Supplies',
+    'How many invoices were auto-matched?',
+    'Show error breakdown by category',
+  ];
+
+  const answers = [
+    'INV-2024-04555 was reconciled successfully on 20 May 2024. All 3-way match checks passed.',
+    'PO-2024-11020 is associated with <strong>Global Trade Corp</strong> (V-00198). Contract value: ₹12,00,000. Delivery terms: 30 days net.',
+    'Last week: <strong>17 invoices</strong> had errors. Top causes: PO mismatch (9), quantity discrepancy (5), missing GR (3).',
+    'INV-2024-04321: Payment processed on <strong>18 May 2024</strong>. Amount: ₹2,34,500. Settlement ref: PAY-REF-77201.',
+    'Reconciliation complete. Invoice amount ₹5,60,000 matches PO line items. GR confirmed. <strong>No discrepancies.</strong>',
+    'Found <strong>34 pending invoices</strong> from May 2024. Total value: ₹1.2 Cr. Oldest pending: INV-2024-04011 (12 May).',
+    'GR for PO-2024-11050: <strong>Partially received</strong>. 80 of 100 units delivered on 15 May. Remaining expected by 25 May.',
+    'Batch RCA-2024-05-18-012: <strong>5 errors</strong> — 3 PO mismatches, 1 duplicate invoice, 1 amount discrepancy (₹12,300 difference).',
+    '<strong>Vertex Industries (V-00412)</strong> has the most rejections: 14 invoices rejected in May. Primary reason: incorrect tax codes.',
+    'Average processing time this month: <strong>2.4 hours</strong>. Down 18% from last month (2.9 hours). Target: 2 hours.',
+    'Vendor V-00198 (Global Trade Corp): <strong>3 payments pending</strong>, total ₹8,45,000. Next payment due: 28 May 2024.',
+    'Currently <strong>52 invoices</strong> pending approval. 12 are overdue (>48 hours). Approvers notified.',
+    'INV-2024-04600: 3-way match <strong>PASSED</strong>. PO: PO-2024-10988, GR: GR-2024-05-14-001. All quantities and amounts align.',
+    'INV-2024-04789 is linked to <strong>PO-2024-11034</strong> (Vendor: Supreme Logistics, V-00301). PO value: ₹3,80,000.',
+    'Today: <strong>23 invoices submitted</strong>. 19 processed successfully, 2 in queue, 2 flagged for review.',
+    'This week reconciliation rate: <strong>94.2%</strong> (up from 91.8% last week). 312 of 331 invoices matched.',
+    'Found <strong>8 vendors</strong> with overdue payments totaling ₹42,30,000. Oldest overdue: V-00156 (34 days past due).',
+    'Acme Supplies (V-00234): <strong>5 active POs</strong>. Total value: ₹28,50,000. Latest: PO-2024-11023 (₹4,52,300).',
+    '<strong>267 invoices</strong> auto-matched this month (81% rate). Manual review needed for 63 invoices.',
+    'Error breakdown: PO mismatch <strong>42%</strong>, quantity discrepancy <strong>28%</strong>, tax code issues <strong>18%</strong>, duplicate entries <strong>12%</strong>.',
+  ];
+
+  // Load 10 messages (5 pairs) per click, up to 100 total
+  const page = window.chatHistoryPage;
+  const perPage = 5; // 5 pairs = 10 messages
+  const startIdx = (page - 1) * perPage;
+  const endIdx = Math.min(startIdx + perPage, 50);
+
+  if (startIdx >= 50) {
+    loader.textContent = 'No more conversations';
+    loader.style.opacity = '0.5';
+    loader.style.cursor = 'default';
+    loader.onclick = null;
+    return;
+  }
+
+  const batch = [];
+  for (let i = startIdx; i < endIdx; i++) {
+    const qIdx = i % questions.length;
+    const suffix = i >= 20 ? ' (batch ' + (Math.floor(i/5) + 1) + ')' : '';
+    batch.push({ role: 'user', text: questions[qIdx] + suffix });
+    batch.push({ role: 'assistant', text: answers[qIdx] });
+  }
+
+  batch.reverse().forEach(msg => {
+    const el = document.createElement('div');
+    el.className = 'chat-msg ' + msg.role;
+    const icon = msg.role === 'user' ? 'fa-user' : 'fa-robot';
+    el.innerHTML = '<div class="chat-avatar"><i class="fa-solid ' + icon + '"></i></div><div class="chat-bubble">' + msg.text + '</div>';
+    chatMessages.insertBefore(el, loader.nextSibling);
+  });
+
+  showToast('Loaded past 10 messages', 'info');
+
+  if (endIdx >= 50) {
+    loader.textContent = 'All conversations loaded';
+    loader.style.opacity = '0.5';
+    loader.style.cursor = 'default';
+    loader.onclick = null;
+  }
+}
+
+function downloadOutput(analysisId, useCase, dateTime) {
+  // Format: AnalysisID-UseCase-DateTime
+  const ucFormatted = useCase.replace(/\s+/g, '_').replace(/&/g, 'and');
+  const dtFormatted = dateTime.replace(/[,:\s]+/g, '_').replace(/_+/g, '_');
+  const filename = `${analysisId}-${ucFormatted}-${dtFormatted}.xlsx`;
+  showToast('Downloading: ' + filename, 'info');
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('uploadModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+</script>
+</body>
+</html>
