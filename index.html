@@ -612,25 +612,6 @@ tr:hover td { background: #fafbfc; }
 }
 .btn-submit:hover { background: #1565c0; }
 
-/* Floating Chat Icon */
-.chat-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #1a2332;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: transform 0.15s ease;
-  font-size: 18px;
-}
-.chat-fab:hover { transform: scale(1.08); }
 
 /* Toast notification */
 .toast {
@@ -895,8 +876,7 @@ tr:hover td { background: #fafbfc; }
   </div>
 </div>
 
-<!-- FAB -->
-<div class="chat-fab"><i class="fa-regular fa-comment-dots"></i></div>
+
 
 <script>
 let selectedWorkflow = '';
@@ -940,7 +920,7 @@ function runMainQuickLookup() {
   const resultsDiv = document.getElementById('hybridResults');
   const list = document.getElementById('hybridResultsList');
   resultsDiv.style.display = '';
-  list.innerHTML = '<div style="display:flex;gap:8px;padding:4px 10px;font-size:9px;text-transform:uppercase;color:#8993a4;border-bottom:1px solid #ebecf0;margin-bottom:6px;"><span style="min-width:120px;">Invoice #</span><span style="min-width:110px;">PO #</span><span style="min-width:140px;">Vendor Name</span><span style="min-width:70px;">Vendor Code</span><span style="min-width:90px;">Invoice Date</span></div>';
+  list.innerHTML = '<div style="display:flex;gap:8px;padding:4px 10px;font-size:9px;text-transform:uppercase;color:#8993a4;border-bottom:1px solid #ebecf0;margin-bottom:6px;"><span style="min-width:120px;">Invoice #</span><span style="min-width:110px;">PO #</span><span style="min-width:140px;">Payee Name</span><span style="min-width:70px;">Vendor Code</span><span style="min-width:90px;">Invoice Date</span></div>';
 
   allItems.forEach((item, i) => {
     setTimeout(() => {
@@ -973,7 +953,7 @@ function copyHybrid(btn, text) {
 function exportMainResults() {
   const rows = document.querySelectorAll('#hybridResultsList .hybrid-result-row');
   if (!rows.length) return;
-  let csv = 'Invoice Number,PO Number,Vendor Name,Primary Vendor Code,Invoice Date\n';
+  let csv = 'Invoice Number,PO Number,Payee Name,Primary Vendor Code,Invoice Date\n';
   rows.forEach(r => {
     const vals = Array.from(r.querySelectorAll('.rv')).map(v => '"'+v.textContent.trim()+'"');
     csv += vals.join(',') + '\n';
