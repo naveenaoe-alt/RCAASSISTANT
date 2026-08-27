@@ -114,9 +114,10 @@ body {
 /* Workflow Grid */
 .workflow-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
+.workflow-grid .small-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .workflow-card {
   border: 2px solid #e0e0e0;
   border-radius: 12px;
@@ -196,6 +197,55 @@ body {
   background: white;
   cursor: pointer;
 }
+
+/* Hybrid Card Styles */
+.hybrid-mode-toggle {
+  display: flex; background: #f4f5f7; border-radius: 8px; padding: 3px; gap: 2px;
+}
+.hybrid-mode-btn {
+  padding: 5px 12px; border-radius: 6px; border: none;
+  font-size: 11px; font-weight: 500; cursor: pointer;
+  background: transparent; color: #44546f; transition: all 0.15s ease;
+}
+.hybrid-mode-btn.active { background: white; color: #1976d2; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.hybrid-mode-btn:hover:not(.active) { color: #172b4d; }
+.hybrid-input {
+  flex: 1; padding: 9px 12px; border: 1px solid #dfe1e6; border-radius: 8px;
+  font-size: 13px; outline: none; transition: border-color 0.15s ease; width: 100%;
+}
+.hybrid-input:focus { border-color: #1976d2; }
+.hybrid-submit-btn {
+  padding: 8px 16px; background: #1976d2; color: white; border: none;
+  border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 5px; transition: all 0.15s ease; white-space: nowrap;
+}
+.hybrid-submit-btn:hover { background: #1565c0; }
+.hybrid-export-btn {
+  padding: 4px 10px; border: 1px solid #1976d2; border-radius: 6px;
+  background: white; color: #1976d2; font-size: 11px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s ease;
+}
+.hybrid-export-btn:hover { background: #e3f2fd; }
+.hybrid-result-row {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: #f9fafb; border-radius: 6px; margin-bottom: 4px;
+  font-size: 12px; animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.hybrid-result-row .rf { display: flex; flex-direction: column; min-width: 100px; }
+.hybrid-result-row .rf .rl { font-size: 9px; color: #8993a4; text-transform: uppercase; }
+.hybrid-result-row .rf .rv { font-size: 12px; font-weight: 500; color: #172b4d; }
+.hybrid-result-row .rf .rv.blue { color: #1976d2; }
+.hybrid-result-row .rf .rv.green { color: #2e7d32; }
+.hybrid-result-row .rf .rv.orange { color: #e65100; }
+.hybrid-copy-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border: none; background: transparent;
+  color: #8993a4; font-size: 9px; cursor: pointer; border-radius: 3px;
+  transition: all 0.15s ease; margin-left: 3px;
+}
+.hybrid-copy-btn:hover { background: #e3f2fd; color: #1976d2; }
+.hybrid-copy-btn.copied { color: #43a047; }
 
 /* Recent Analyses Table */
 .table-header {
@@ -640,15 +690,56 @@ tr:hover td { background: #fafbfc; }
     </div>
     <p class="section-subtitle">Select a use case to upload invoice details</p>
     <div class="workflow-grid section-body">
-      <div class="workflow-card blue" onclick="selectWorkflow(this, 'PO & Vendor Details')">
-        <div class="wf-icon"><i class="fa-regular fa-file-lines"></i></div>
-        <div class="wf-title">Get PO & Vendor Details</div>
-        <div class="wf-desc">Provides PO, vendor name based on invoice number</div>
-        <div class="wf-actions">
-          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('PO & Vendor Details')">Upload</button>
-          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+      <!-- Hybrid Card: PO & Vendor Details -->
+      <div class="workflow-card blue hybrid" onclick="selectWorkflow(this, 'PO & Vendor Details')" style="padding: 20px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="wf-icon"><i class="fa-regular fa-file-lines"></i></div>
+            <div>
+              <div class="wf-title">Get PO & Vendor Details</div>
+              <div class="wf-desc" style="margin-bottom:0;">Provides PO, vendor name based on invoice number or PO</div>
+            </div>
+          </div>
+          <div class="hybrid-mode-toggle">
+            <button class="hybrid-mode-btn active" onclick="event.stopPropagation(); switchHybridMode('quick')">Quick Lookup</button>
+            <button class="hybrid-mode-btn" onclick="event.stopPropagation(); switchHybridMode('upload')">Bulk Upload</button>
+          </div>
+        </div>
+        <!-- Quick Lookup -->
+        <div id="hybridQuick" class="hybrid-panel" onclick="event.stopPropagation();">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <span style="font-size:12px; color:#1976d2; font-weight:500; min-width:60px;">Invoice #</span>
+            <input type="text" class="hybrid-input" id="mainInvInput" placeholder="Comma-separated (e.g. INV-2024-04567, INV-2024-04568)" onkeydown="if(event.key==='Enter')runMainQuickLookup()">
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+            <span style="font-size:12px; color:#1976d2; font-weight:500; min-width:60px;">PO #</span>
+            <input type="text" class="hybrid-input" id="mainPoInput" placeholder="Comma-separated (e.g. PO-2024-11023, PO-2024-11034)" onkeydown="if(event.key==='Enter')runMainQuickLookup()">
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:11px; color:#8993a4;">Enter Invoice Numbers, PO Numbers, or both. Max 10 items for quick lookup.</span>
+            <button class="hybrid-submit-btn" onclick="event.stopPropagation(); runMainQuickLookup()"><i class="fa-solid fa-magnifying-glass"></i> Look up</button>
+          </div>
+        </div>
+        <!-- Bulk Upload -->
+        <div id="hybridUpload" class="hybrid-panel" style="display:none;" onclick="event.stopPropagation();">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-upload" onclick="openUploadModal('PO & Vendor Details')">Upload .xlsx</button>
+            <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+            <span style="font-size:11px; color:#8993a4;">For 10+ invoices, upload a file.</span>
+          </div>
+        </div>
+        <!-- Inline Results -->
+        <div id="hybridResults" style="display:none; margin-top:14px; border-top:1px solid #ebecf0; padding-top:12px;" onclick="event.stopPropagation();">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:600; color:#172b4d;"><i class="fa-solid fa-check-circle" style="color:#43a047;"></i> Results</span>
+            <button class="hybrid-export-btn" onclick="event.stopPropagation(); exportMainResults()"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
+          </div>
+          <div id="hybridResultsList" style="font-size:12px;"></div>
         </div>
       </div>
+
+      <!-- Other 3 cards in a row -->
+      <div class="small-cards">
       <div class="workflow-card green" onclick="selectWorkflow(this, 'Invoice Status')">
         <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
         <div class="wf-title">Get Invoice Status</div>
@@ -675,6 +766,7 @@ tr:hover td { background: #fafbfc; }
           <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
           <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -795,6 +887,91 @@ tr:hover td { background: #fafbfc; }
 <script>
 let selectedWorkflow = '';
 let deleteTargetRow = null;
+
+// Hybrid Card Functions
+function switchHybridMode(mode) {
+  const btns = document.querySelectorAll('.hybrid-mode-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  if (mode === 'quick') {
+    btns[0].classList.add('active');
+    document.getElementById('hybridQuick').style.display = '';
+    document.getElementById('hybridUpload').style.display = 'none';
+  } else {
+    btns[1].classList.add('active');
+    document.getElementById('hybridQuick').style.display = 'none';
+    document.getElementById('hybridUpload').style.display = '';
+  }
+}
+
+function runMainQuickLookup() {
+  const invInput = document.getElementById('mainInvInput').value.trim();
+  const poInput = document.getElementById('mainPoInput').value.trim();
+  if (!invInput && !poInput) {
+    document.getElementById('mainInvInput').style.borderColor = '#d32f2f';
+    setTimeout(() => document.getElementById('mainInvInput').style.borderColor = '', 1500);
+    return;
+  }
+  const invoices = invInput ? invInput.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const posIn = poInput ? poInput.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const allItems = [...invoices.map(v => ({id:v, type:'inv'})), ...posIn.map(v => ({id:v, type:'po'}))];
+
+  if (allItems.length > 10) { alert('For more than 10 items, use Bulk Upload.'); return; }
+
+  const vendors = ['Acme Supplies Pvt. Ltd.','Global Trade Corp','Supreme Logistics','Vertex Industries','Metro Distributors'];
+  const vCodes = ['V-00234','V-00198','V-00301','V-00412','V-00156'];
+  const dates = ['12 May 2024','15 May 2024','18 May 2024','20 May 2024','21 May 2024'];
+  const poNums = ['PO-2024-11023','PO-2024-11034','PO-2024-10988','PO-2024-11050','PO-2024-10900'];
+  const invNums = ['INV-2024-04567','INV-2024-04568','INV-2024-04600','INV-2024-04789','INV-2024-04321'];
+
+  const resultsDiv = document.getElementById('hybridResults');
+  const list = document.getElementById('hybridResultsList');
+  resultsDiv.style.display = '';
+  list.innerHTML = '<div style="display:flex;gap:8px;padding:4px 10px;font-size:9px;text-transform:uppercase;color:#8993a4;border-bottom:1px solid #ebecf0;margin-bottom:6px;"><span style="min-width:120px;">Invoice #</span><span style="min-width:110px;">PO #</span><span style="min-width:140px;">Vendor Name</span><span style="min-width:70px;">Vendor Code</span><span style="min-width:90px;">Invoice Date</span></div>';
+
+  allItems.forEach((item, i) => {
+    setTimeout(() => {
+      const inv = item.type === 'inv' ? item.id : invNums[i % invNums.length];
+      const po = item.type === 'po' ? item.id : poNums[i % poNums.length];
+      const v = vendors[i % vendors.length];
+      const vc = vCodes[i % vCodes.length];
+      const d = dates[i % dates.length];
+      const row = document.createElement('div');
+      row.className = 'hybrid-result-row';
+      row.innerHTML = `
+        <div class="rf" style="min-width:120px;"><span class="rv blue">${inv}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${inv}')"><i class="fa-regular fa-copy"></i></button></div>
+        <div class="rf" style="min-width:110px;"><span class="rv">${po}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${po}')"><i class="fa-regular fa-copy"></i></button></div>
+        <div class="rf" style="min-width:140px;"><span class="rv green">${v}</span></div>
+        <div class="rf" style="min-width:70px;"><span class="rv orange">${vc}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${vc}')"><i class="fa-regular fa-copy"></i></button></div>
+        <div class="rf" style="min-width:90px;"><span class="rv">${d}</span></div>
+      `;
+      list.appendChild(row);
+    }, (i + 1) * 350);
+  });
+}
+
+function copyHybrid(btn, text) {
+  navigator.clipboard.writeText(text);
+  btn.classList.add('copied');
+  btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; }, 1500);
+}
+
+function exportMainResults() {
+  const rows = document.querySelectorAll('#hybridResultsList .hybrid-result-row');
+  if (!rows.length) return;
+  let csv = 'Invoice Number,PO Number,Vendor Name,Primary Vendor Code,Invoice Date\n';
+  rows.forEach(r => {
+    const vals = Array.from(r.querySelectorAll('.rv')).map(v => '"'+v.textContent.trim()+'"');
+    csv += vals.join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'application/vnd.ms-excel'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'PO_Vendor_Details_' + new Date().toISOString().slice(0,10) + '.xlsx';
+  a.click();
+  showToast('Exported to Excel', 'success');
+}
+
 let sortState = { col: -1, asc: true };
 let currentPage = 1;
 const pageSize = 10;
