@@ -171,32 +171,13 @@ body {
   align-items: center;
   gap: 8px;
 }
-.btn-upload {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  padding: 8px 16px;
-  font-size: 12px;
-}
-.workflow-card.blue .btn-upload { background: #e3f2fd; color: #1976d2; }
-.workflow-card.green .btn-upload { background: #e8f5e9; color: #43a047; }
-.workflow-card.orange .btn-upload { background: #fff3e0; color: #e65100; }
-.workflow-card.purple .btn-upload { background: #f3e5f5; color: #7b1fa2; }
-.btn-upload:hover { opacity: 0.85; transform: scale(1.02); }
 
-.format-select {
-  padding: 3px 6px;
-  border: 1px solid var(--color-border-light, #ebecf0);
-  border-radius: 4px;
-  font-size: 10px;
-  color: var(--color-text-secondary, #44546f);
-  background: white;
-  cursor: pointer;
-}
+.workflow-card.blue 
+.workflow-card.green 
+.workflow-card.orange 
+.workflow-card.purple 
+
+
 
 /* Hybrid Card Styles */
 .hybrid-mode-toggle {
@@ -246,6 +227,114 @@ body {
 }
 .hybrid-copy-btn:hover { background: #e3f2fd; color: #1976d2; }
 .hybrid-copy-btn.copied { color: #43a047; }
+
+/* Result row checkboxes */
+.result-check { width: 14px; height: 14px; cursor: pointer; accent-color: #1976d2; }
+
+
+/* Mini Quick/Upload toggle for T2/T3/T4 cards */
+.mini-toggle {
+  display: flex; background: #f4f5f7; border-radius: 6px; padding: 2px; gap: 1px;
+}
+.mini-toggle-btn {
+  padding: 3px 8px; border-radius: 4px; border: none;
+  font-size: 10px; font-weight: 500; cursor: pointer;
+  background: transparent; color: #44546f; transition: all 0.15s ease;
+}
+.mini-toggle-btn.active { background: white; color: #1976d2; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.mini-quick {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+}
+.mini-input {
+  flex: 1; padding: 7px 10px; border: 1px solid #dfe1e6; border-radius: 6px;
+  font-size: 11px; outline: none; transition: border-color 0.15s ease;
+}
+.mini-input:focus { border-color: #1976d2; }
+.mini-submit {
+  padding: 7px 12px; background: #1a2332; color: white; border: none;
+  border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.mini-submit:hover { background: #2d3748; }
+
+/* Mini 2-column quick input */
+.mini-quick-2col {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 6px;
+}
+.mini-quick-2col .mini-row {
+  display: flex; align-items: center; gap: 6px;
+}
+.mini-quick-2col .mini-label {
+  font-size: 10px; color: #1976d2; font-weight: 500; min-width: 62px; white-space: nowrap;
+}
+.mini-quick-2col .mini-submit {
+  align-self: flex-end;
+}
+
+/* Mini dropdown + input combo */
+.mini-combo { display: flex; align-items: center; gap: 0; flex: 1; }
+.mini-combo select {
+  padding: 7px 6px; border: 1px solid #dfe1e6; border-radius: 6px 0 0 6px;
+  font-size: 10px; color: #1976d2; font-weight: 500; background: #f5f9ff;
+  outline: none; cursor: pointer; border-right: none;
+}
+.mini-combo select:focus { border-color: #1976d2; }
+.mini-combo input {
+  flex: 1; padding: 7px 10px; border: 1px solid #dfe1e6; border-radius: 0 6px 6px 0;
+  font-size: 11px; outline: none;
+}
+.mini-combo input:focus { border-color: #1976d2; }
+.mini-upload { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+
+
+
+.input-format-link {
+  font-size: 11px;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+.input-format-link:hover { text-decoration: underline; }
+
+
+
+
+
+/* Uniform action buttons */
+.wf-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wf-action-btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.wf-action-btn.upload { background: #e3f2fd; color: #1976d2; }
+.wf-action-btn.upload:hover { background: #bbdefb; }
+.workflow-card.green .wf-action-btn.upload { background: #e8f5e9; color: #43a047; }
+.workflow-card.green .wf-action-btn.upload:hover { background: #c8e6c9; }
+.workflow-card.orange .wf-action-btn.upload { background: #fff3e0; color: #e65100; }
+.workflow-card.orange .wf-action-btn.upload:hover { background: #ffe0b2; }
+.workflow-card.purple .wf-action-btn.upload { background: #f3e5f5; color: #7b1fa2; }
+.workflow-card.purple .wf-action-btn.upload:hover { background: #e1bee7; }
+.wf-action-btn.run-selected { background: #e3f2fd; color: #1976d2; }
+.wf-action-btn.run-selected:hover { background: #bbdefb; }
 
 /* Recent Analyses Table */
 .table-header {
@@ -718,15 +807,15 @@ tr:hover td { background: #fafbfc; }
         <!-- Bulk Upload -->
         <div id="hybridUpload" class="hybrid-panel" style="display:none;" onclick="event.stopPropagation();">
           <div style="display:flex; align-items:center; gap:12px;">
-            <button class="btn-upload" onclick="openUploadModal('PO & Vendor Details')">Upload .xlsx</button>
-            <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+            <button class="wf-action-btn upload" onclick="openUploadModal('PO & Vendor Details')">Upload .xlsx</button>
+            <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
             <span style="font-size:11px; color:#8993a4;">For 10+ invoices, upload a file.</span>
           </div>
         </div>
         <!-- Inline Results -->
         <div id="hybridResults" style="display:none; margin-top:14px; border-top:1px solid #ebecf0; padding-top:12px;" onclick="event.stopPropagation();">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:12px; font-weight:600; color:#172b4d;"><i class="fa-solid fa-check-circle" style="color:#43a047;"></i> Results</span>
+            <span style="font-size:12px; font-weight:600; color:#172b4d;"><i class="fa-solid fa-check-circle" style="color:#43a047;"></i> Results <span id="selectCount" style="font-size:11px;color:#1976d2;font-weight:400;margin-left:8px;"></span></span>
             <button class="hybrid-export-btn" onclick="event.stopPropagation(); exportMainResults()"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
           </div>
           <div id="hybridResultsList" style="font-size:12px;"></div>
@@ -735,33 +824,43 @@ tr:hover td { background: #fafbfc; }
 
       <!-- Other 3 cards in a row -->
       <div class="small-cards">
+
+      <!-- Invoice Status -->
       <div class="workflow-card green" onclick="selectWorkflow(this, 'Invoice Status')">
         <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
         <div class="wf-title">Get Invoice Status</div>
         <div class="wf-desc">Provides current status of the invoice</div>
-        <div class="wf-actions">
-          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Invoice Status')">Upload</button>
-          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        <div class="wf-actions-row">
+          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Status')">Upload</button>
+          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
         </div>
       </div>
+
+      <!-- Payment Status -->
       <div class="workflow-card orange" onclick="selectWorkflow(this, 'Payment Status')">
         <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
         <div class="wf-title">Get Payment Status</div>
         <div class="wf-desc">Provides payment status and related details</div>
-        <div class="wf-actions">
-          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Payment Status')">Upload</button>
-          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        <div class="wf-actions-row">
+          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Payment Status')">Upload</button>
+          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Payment Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
         </div>
       </div>
+
+      <!-- Invoice Reconciliation -->
       <div class="workflow-card purple" onclick="selectWorkflow(this, 'Invoice Reconciliation')">
         <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
         <div class="wf-title">Invoice Reconciliation</div>
         <div class="wf-desc">Match and reconcile invoice with PO, GR and payments</div>
-        <div class="wf-actions">
-          <button class="btn-upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
-          <select class="format-select"><option>Download Format: Excel</option><option>CSV</option></select>
+        <div class="wf-actions-row">
+          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
+          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Reconciliation')"><i class="fa-solid fa-play"></i> Run for selected</button>
         </div>
       </div>
+
       </div>
     </div>
   </section>
@@ -920,7 +1019,7 @@ function runMainQuickLookup() {
   const resultsDiv = document.getElementById('hybridResults');
   const list = document.getElementById('hybridResultsList');
   resultsDiv.style.display = '';
-  list.innerHTML = '<div style="display:flex;gap:8px;padding:4px 10px;font-size:9px;text-transform:uppercase;color:#8993a4;border-bottom:1px solid #ebecf0;margin-bottom:6px;"><span style="min-width:120px;">Invoice #</span><span style="min-width:110px;">PO #</span><span style="min-width:140px;">Payee Name</span><span style="min-width:70px;">Vendor Code</span><span style="min-width:90px;">Invoice Date</span></div>';
+  list.innerHTML = '<div style="display:flex;gap:8px;padding:4px 10px;font-size:9px;text-transform:uppercase;color:#8993a4;border-bottom:1px solid #ebecf0;margin-bottom:6px;align-items:center;"><span style="min-width:30px;"><input type="checkbox" onchange="toggleSelectAll(this)" title="Select all"></span><span style="min-width:120px;">Invoice #</span><span style="min-width:110px;">PO #</span><span style="min-width:140px;">Payee Name</span><span style="min-width:70px;">Vendor Code</span><span style="min-width:90px;">Invoice Date</span></div>';
 
   allItems.forEach((item, i) => {
     setTimeout(() => {
@@ -932,10 +1031,11 @@ function runMainQuickLookup() {
       const row = document.createElement('div');
       row.className = 'hybrid-result-row';
       row.innerHTML = `
-        <div class="rf" style="min-width:120px;"><span class="rv blue">${inv}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${inv}')"><i class="fa-regular fa-copy"></i></button></div>
-        <div class="rf" style="min-width:110px;"><span class="rv">${po}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${po}')"><i class="fa-regular fa-copy"></i></button></div>
+        <div class="rf" style="min-width:30px;"><input type="checkbox" class="result-check" onchange="updateSelectCount()"></div>
+        <div class="rf" style="min-width:120px;"><span class="rv blue">${inv}</span></div>
+        <div class="rf" style="min-width:110px;"><span class="rv">${po}</span></div>
         <div class="rf" style="min-width:140px;"><span class="rv green">${v}</span></div>
-        <div class="rf" style="min-width:70px;"><span class="rv orange">${vc}</span><button class="hybrid-copy-btn" onclick="copyHybrid(this,'${vc}')"><i class="fa-regular fa-copy"></i></button></div>
+        <div class="rf" style="min-width:70px;"><span class="rv orange">${vc}</span></div>
         <div class="rf" style="min-width:90px;"><span class="rv">${d}</span></div>
       `;
       list.appendChild(row);
@@ -943,11 +1043,107 @@ function runMainQuickLookup() {
   });
 }
 
-function copyHybrid(btn, text) {
-  navigator.clipboard.writeText(text);
-  btn.classList.add('copied');
-  btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; }, 1500);
+
+
+// Mini card toggle (T2/T3/T4)
+function toggleMiniMode(btn, mode, prefix) {
+  const toggle = btn.closest('.mini-toggle');
+  toggle.querySelectorAll('.mini-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const card = btn.closest('.workflow-card');
+  const quick = card.querySelector('#' + prefix + '-quick');
+  const upload = card.querySelector('#' + prefix + '-upload');
+  if (mode === 'quick') {
+    quick.style.display = '';
+    upload.style.display = 'none';
+  } else {
+    quick.style.display = 'none';
+    upload.style.display = '';
+  }
+}
+
+// Quick batch submit — creates an analysis entry in Recent Analyses
+function submitQuickBatch(useCase, inputId, vcId) {
+  const input = document.getElementById(inputId);
+  const vcInput = vcId ? document.getElementById(vcId) : null;
+  const val = input.value.trim();
+  const vcVal = vcInput ? vcInput.value.trim() : '';
+  if (!val) {
+    input.style.borderColor = '#d32f2f';
+    setTimeout(() => input.style.borderColor = '', 1500);
+    return;
+  }
+  const items = val.split(',').map(s => s.trim()).filter(Boolean);
+  if (items.length > 10) {
+    showToast('Max 10 invoices for quick batch. Use Bulk Upload for more.', 'info');
+    return;
+  }
+
+  // Create a new analysis entry
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const id = 'RCA-' + now.toISOString().slice(0,10) + '-' + String(Math.floor(Math.random()*900)+100);
+  const tagClass = useCase === 'Invoice Status' ? 'tag-blue' : useCase === 'Payment Status' ? 'tag-green' : 'tag-purple';
+  const rowClass = useCase === 'Invoice Status' ? 'row-blue' : useCase === 'Payment Status' ? 'row-green' : 'row-purple';
+
+  // Add to allAnalyses at the top
+  allAnalyses.unshift({
+    id: id, useCase: useCase, tagClass: tagClass, rowClass: rowClass,
+    date: dateStr, submitted: items.length, errors: Math.floor(Math.random() * 2)
+  });
+
+  renderPage(1);
+  input.value = '';
+  if (vcInput) vcInput.value = '';
+  showToast('Quick batch created: ' + id + ' (' + items.length + ' invoices) — see Recent Analyses', 'success');
+}
+
+function toggleSelectAll(master) {
+  const checks = document.querySelectorAll('#hybridResultsList .result-check');
+  checks.forEach(c => c.checked = master.checked);
+  updateSelectCount();
+}
+
+function updateSelectCount() {
+  const checks = document.querySelectorAll('#hybridResultsList .result-check');
+  const checked = Array.from(checks).filter(c => c.checked).length;
+  const countEl = document.getElementById('selectCount');
+  if (countEl) {
+    countEl.textContent = checked > 0 ? '(' + checked + ' selected)' : '';
+  }
+}
+
+
+// Run for selected invoices from PO & Vendor Details results
+function runForSelected(useCase) {
+  const checks = document.querySelectorAll('#hybridResultsList .result-check:checked');
+  if (checks.length === 0) {
+    showToast('No invoices selected. Select items in PO & Vendor Details results first.', 'info');
+    return;
+  }
+
+  // Get selected invoice IDs
+  const selectedInvs = [];
+  checks.forEach(chk => {
+    const row = chk.closest('.hybrid-result-row');
+    const invEl = row.querySelector('.rv.blue');
+    if (invEl) selectedInvs.push(invEl.textContent.trim());
+  });
+
+  // Create analysis entry
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const id = 'RCA-' + now.toISOString().slice(0,10) + '-' + String(Math.floor(Math.random()*900)+100);
+  const tagClass = useCase === 'Invoice Status' ? 'tag-blue' : useCase === 'Payment Status' ? 'tag-green' : 'tag-purple';
+  const rowClass = useCase === 'Invoice Status' ? 'row-blue' : useCase === 'Payment Status' ? 'row-green' : 'row-purple';
+
+  allAnalyses.unshift({
+    id: id, useCase: useCase, tagClass: tagClass, rowClass: rowClass,
+    date: dateStr, submitted: selectedInvs.length, errors: Math.floor(Math.random() * 2)
+  });
+
+  renderPage(1);
+  showToast('Analysis ' + id + ' created for ' + selectedInvs.length + ' selected invoices (' + useCase + ')', 'success');
 }
 
 function exportMainResults() {
@@ -1267,55 +1463,43 @@ function handleFile(input) {
 
 function submitUpload() {
   closeModal();
-  // Simulate adding a new running analysis
-  const tbody = document.getElementById('tableBody');
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  const id = 'RCA-' + now.toISOString().slice(0,10).replace(/-/g, '-') + '-' + String(Math.floor(Math.random()*900)+100);
-  
+  const id = 'RCA-' + now.toISOString().slice(0,10) + '-' + String(Math.floor(Math.random()*900)+100);
+
   const tagClass = selectedWorkflow === 'Invoice Status' ? 'tag-blue' :
                    selectedWorkflow === 'Payment Status' ? 'tag-green' :
                    selectedWorkflow === 'PO & Vendor Details' ? 'tag-orange' : 'tag-purple';
   const rowClass = selectedWorkflow === 'Invoice Status' ? 'row-blue' :
                    selectedWorkflow === 'Payment Status' ? 'row-green' :
                    selectedWorkflow === 'PO & Vendor Details' ? 'row-orange' : 'row-purple';
-  
-  const newRow = document.createElement('tr');
-  newRow.className = rowClass;
-  newRow.innerHTML = `
-    <td class="id-cell"><span class="id-text">${id}</span></td>
-    <td><span class="use-case-tag ${tagClass}">${selectedWorkflow}</span></td>
-    <td>${dateStr}</td>
-    <td><div class="invoice-stats"><span class="submitted">— submitted</span><span style="color:#8993a4;">Pending...</span></div></td>
-    <td><div class="status-bar"><div class="progress"><div class="progress-fill running" style="width:45%"></div></div><span class="status-text running-text">Running...</span></div></td>
-    <td><span style="color:#8993a4; font-size:12px;">Processing...</span></td>
-    <td><div class="row-actions"><button class="row-action-btn edit" onclick="editId(this)" title="Edit ID"><i class="fa-solid fa-pen"></i></button><button class="row-action-btn delete" onclick="confirmDelete(this)" title="Delete"><i class="fa-solid fa-trash"></i></button></div></td>
-  `;
-  tbody.insertBefore(newRow, tbody.firstChild);
-  showToast('Analysis started for ' + selectedWorkflow, 'success');
-  
-  // Simulate progress
-  let progress = 45;
-  const interval = setInterval(() => {
-    progress += Math.random() * 15;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(interval);
-      const bar = newRow.querySelector('.progress-fill');
-      bar.style.width = '100%';
-      bar.classList.remove('running');
-      newRow.querySelector('.status-text').textContent = '100%';
-      newRow.querySelector('.status-text').classList.remove('running-text');
-      newRow.querySelector('td:last-child').innerHTML = '<a class="download-link" onclick="showToast(\'Downloading output...\', \'info\')"><i class="fa-solid fa-download"></i> Download output</a>';
-      const invCount = Math.floor(Math.random() * 150) + 20;
-      const errCount = Math.floor(Math.random() * 8);
-      newRow.querySelector('td:nth-child(4)').innerHTML = '<div class="invoice-stats"><span class="submitted">' + invCount + ' submitted</span><span class="' + (errCount > 0 ? 'errors' : 'no-errors') + '">' + errCount + ' errors</span></div>';
-      newRow.querySelector('td:nth-child(6)').innerHTML = '<a class="download-link" onclick="showToast(\'Downloading output...\', \'info\')"><i class="fa-solid fa-download"></i> Download output</a>';
-      showToast('Analysis complete!', 'success');
-    } else {
-      newRow.querySelector('.progress-fill').style.width = progress + '%';
+
+  const invCount = Math.floor(Math.random() * 150) + 20;
+  const errCount = Math.floor(Math.random() * 8);
+
+  // Add to allAnalyses and re-render in Recent Analyses
+  allAnalyses.unshift({
+    id: id, useCase: selectedWorkflow, tagClass: tagClass, rowClass: rowClass,
+    date: dateStr, submitted: invCount, errors: errCount
+  });
+
+  // Ensure Recent Analyses section is visible
+  const recentSection = document.querySelectorAll('.section-card')[1];
+  const recentBody = recentSection.querySelector('.section-body');
+  const recentBtn = recentSection.querySelector('.section-btn');
+  if (recentBody && recentBody.classList.contains('collapsed')) {
+    recentBody.classList.remove('collapsed');
+    if (recentBtn) {
+      recentBtn.querySelector('i').className = 'fa-solid fa-minus';
+      recentBtn.title = 'Minimize';
     }
-  }, 800);
+  }
+
+  renderPage(1);
+  showToast('File uploaded — Analysis ' + id + ' created for ' + selectedWorkflow, 'success');
+
+  // Scroll to Recent Analyses
+  recentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function handleChatAttach(input) {
