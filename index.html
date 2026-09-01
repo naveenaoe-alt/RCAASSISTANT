@@ -765,6 +765,27 @@ tr:hover td { background: #fafbfc; }
   max-width: 120px;
 }
 .th-filter:focus { border-color: #1976d2; outline: none; }
+
+/* Group Tabs */
+.group-tabs {
+  display: flex; gap: 4px; margin-bottom: 14px;
+  border-bottom: 2px solid #ebecf0; padding-bottom: 0;
+}
+.group-tab {
+  padding: 9px 16px; border: none; background: none;
+  font-size: 12px; font-weight: 600; color: #8993a4;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all 0.15s ease;
+  display: flex; align-items: center; gap: 6px;
+}
+.group-tab:hover { color: #172b4d; }
+.group-tab.active { color: #1976d2; border-bottom-color: #1976d2; }
+.group-tab i { font-size: 11px; }
+.group-content { display: none; }
+.group-content.active { display: block; }
+.group-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
 </style>
 </head>
 <body>
@@ -795,7 +816,7 @@ tr:hover td { background: #fafbfc; }
       <div style="width:32px;height:32px;border-radius:50%;background:#e3f2fd;color:#1976d2;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">ND</div>
     </div>
   </div>
-  <!-- Workflow Cards (compact) -->
+  <!-- Workflow Cards - Tabbed Groups -->
   <section class="section-card">
     <div class="section-header">
       <h2 class="section-title">How can I help you?</h2>
@@ -804,64 +825,79 @@ tr:hover td { background: #fafbfc; }
         <button class="section-btn" onclick="maximizeSection(this)" title="Maximize"><i class="fa-solid fa-expand"></i></button>
       </div>
     </div>
-    <p class="section-subtitle">Select a use case to upload invoice details</p>
-    <div class="workflow-grid section-body">
-      <!-- PO & Vendor Details (with Quick Lookup) -->
-      <div class="workflow-card blue" onclick="selectWorkflow(this, 'PO & Vendor Details')">
-                <div class="wf-icon"><i class="fa-regular fa-file-lines"></i></div>
-        <div class="wf-title">Get PO & Vendor Details</div>
-        <div class="card-body">
-        <div class="wf-desc">PO, payee name based on invoice, PO, or vendor code</div>
-        <div class="wf-actions-row" onclick="event.stopPropagation();">
-          <button class="wf-action-btn" onclick="event.stopPropagation();openQuickLookupSection()" style="background:#1976d2;color:white;"><i class="fa-solid fa-magnifying-glass"></i> Quick Lookup</button>
-          <button class="wf-action-btn upload" onclick="openUploadModal('PO & Vendor Details')">Upload</button>
-          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
-        </div>
+    <div class="section-body">
+      <!-- Group Tabs -->
+      <div class="group-tabs">
+        <button class="group-tab active" onclick="switchGroupTab(this, 'invoices')">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Invoices &amp; Payments
+        </button>
+        <button class="group-tab" onclick="switchGroupTab(this, 'future')">
+          <i class="fa-solid fa-flask"></i> For Future Use
+        </button>
+      </div>
+
+      <!-- Tab: Invoices & Payments (all 4 use cases) -->
+      <div class="group-content active" id="group-invoices">
+        <div class="group-cards">
+          <div class="workflow-card blue" onclick="selectWorkflow(this, 'PO & Vendor Details')">
+            <div class="wf-icon"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="wf-title">Get PO & Vendor Details</div>
+            <div class="card-body">
+              <div class="wf-desc">PO, payee name based on invoice, PO, or vendor code</div>
+              <div class="wf-actions-row" onclick="event.stopPropagation();">
+                <button class="wf-action-btn" onclick="event.stopPropagation();openQuickLookupSection()" style="background:#1976d2;color:white;"><i class="fa-solid fa-magnifying-glass"></i> Quick Lookup</button>
+                <button class="wf-action-btn upload" onclick="openUploadModal('PO & Vendor Details')">Upload</button>
+                <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-card green" onclick="selectWorkflow(this, 'Invoice Status')">
+            <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="wf-title">Get Invoice Status</div>
+            <div class="card-body">
+              <div class="wf-desc">Provides current status of the invoice</div>
+              <div class="wf-actions-row">
+                <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
+                <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Status')">Upload</button>
+                <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-card orange" onclick="selectWorkflow(this, 'Payment Status')">
+            <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+            <div class="wf-title">Get Payment Status</div>
+            <div class="card-body">
+              <div class="wf-desc">Provides payment status and related details</div>
+              <div class="wf-actions-row">
+                <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Payment Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
+                <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Payment Status')">Upload</button>
+                <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-card purple" onclick="selectWorkflow(this, 'Invoice Reconciliation')">
+            <div class="wf-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <div class="wf-title">Invoice Reconciliation</div>
+            <div class="card-body">
+              <div class="wf-desc">Match and reconcile invoice with PO, GR and payments</div>
+              <div class="wf-actions-row">
+                <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Reconciliation')"><i class="fa-solid fa-play"></i> Run for selected</button>
+                <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
+                <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Invoice Status -->
-      <div class="workflow-card green" onclick="selectWorkflow(this, 'Invoice Status')">
-                <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
-        <div class="wf-title">Get Invoice Status</div>
-        <div class="card-body">
-        <div class="wf-desc">Provides current status of the invoice</div>
-        <div class="wf-actions-row">
-          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
-          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Status')">Upload</button>
-          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
-        </div>
+      <!-- Tab: For Future Use -->
+      <div class="group-content" id="group-future">
+        <div style="text-align:center;padding:32px 20px;">
+          <i class="fa-solid fa-flask" style="font-size:32px;color:#dfe1e6;margin-bottom:10px;display:block;"></i>
+          <p style="font-size:14px;font-weight:600;color:#44546f;margin-bottom:4px;">Coming Soon</p>
+          <p style="font-size:12px;color:#8993a4;max-width:360px;margin:0 auto;">New use cases like Duplicate Check, Aging & Overdue, GR/GRN Details, and more will appear here as they become available.</p>
         </div>
       </div>
-
-      <!-- Payment Status -->
-      <div class="workflow-card orange" onclick="selectWorkflow(this, 'Payment Status')">
-                <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
-        <div class="wf-title">Get Payment Status</div>
-        <div class="card-body">
-        <div class="wf-desc">Provides payment status and related details</div>
-        <div class="wf-actions-row">
-          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Payment Status')"><i class="fa-solid fa-play"></i> Run for selected</button>
-          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Payment Status')">Upload</button>
-          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
-        </div>
-        </div>
-      </div>
-
-      <!-- Invoice Reconciliation -->
-      <div class="workflow-card purple" onclick="selectWorkflow(this, 'Invoice Reconciliation')">
-                <div class="wf-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
-        <div class="wf-title">Invoice Reconciliation</div>
-        <div class="card-body">
-        <div class="wf-desc">Match and reconcile invoice with PO, GR and payments</div>
-        <div class="wf-actions-row">
-          <button class="wf-action-btn run-selected" onclick="event.stopPropagation(); runForSelected('Invoice Reconciliation')"><i class="fa-solid fa-play"></i> Run for selected</button>
-          <button class="wf-action-btn upload" onclick="event.stopPropagation(); openUploadModal('Invoice Reconciliation')">Upload</button>
-          <a class="input-format-link" onclick="event.stopPropagation(); showToast('Downloading input template...', 'info')"><i class="fa-solid fa-download"></i> Download input format</a>
-        </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -1775,6 +1811,13 @@ function openQuickLookupSection() {
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   // Focus first input
   setTimeout(() => document.getElementById('mainInvInput').focus(), 400);
+}
+
+function switchGroupTab(btn, groupId) {
+  document.querySelectorAll('.group-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.group-content').forEach(function(c) { c.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('group-' + groupId).classList.add('active');
 }
 </script>
 </body>
